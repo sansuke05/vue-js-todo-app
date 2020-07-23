@@ -2,8 +2,8 @@
   <div>
     {{ msg }}
     <form>
-      <button type="button" v-on:click="addTodo()">タスクを追加</button>
-      <button>終了したタスクを削除</button>
+      <button type="button" @click="addTodo()">タスクを追加</button>
+      <button type="button" @click="removeTodo()">終了したタスクを削除</button>
       <p>
         タスクを入力：
         <input type="text" v-model="newTodo" />
@@ -12,9 +12,10 @@
     </form>
     <div class="task-list">
       <label class="task-list__item" v-for="todo in todos" :key="todo.text">
-        <input type="checkbox" />
-        <button>編集</button>
-        {{ todo.text }}
+        <input type="checkbox" v-model="todo.done" />
+        <input type="checkbox" v-model="todo.editing" />
+        <input v-if="todo.editing" v-model="todo.text" @keyup.enter="todo.editing = !todo.editing" />
+        <span v-else>{{ todo.text }}</span>
       </label>
     </div>
   </div>
@@ -32,18 +33,22 @@ export default {
         {
           text: "vue-router",
           done: false,
+          editing: false,
         },
         {
           text: "vuex",
           done: false,
+          editing: false,
         },
         {
           text: "vue-loader",
           done: false,
+          editing: false,
         },
         {
           text: "awesome-vue",
           done: true,
+          editing: false,
         },
       ],
       newTodo: "",
@@ -59,8 +64,17 @@ export default {
       this.todos.push({
         text: text,
         done: false,
+        editing: false,
       });
       this.newTodo = "";
+    },
+    // eslint-disable-next-line no-unused-vars
+    removeTodo: function (event) {
+      for (let i = this.todos.length - 1; i >= 0; i--) {
+        if (this.todos[i].done) {
+          this.todos.splice(i, 1);
+        }
+      }
     },
   },
 };
